@@ -1,1 +1,0 @@
-# mojaloop-on-premise-deployment-guidelines
