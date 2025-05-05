@@ -237,7 +237,6 @@ cd iac-modules/terraform/ccnew
 Update the following files in `custom-config/`:
 
 1. **`cluster-config.yaml`**:
-
    ```yaml
    iac_terraform_modules_tag: v6.0.0-rc003
    ansible_collection_tag: v5.5.0-rc5
@@ -259,6 +258,11 @@ Update the following files in `custom-config/`:
    object_storage_base_bucket_name: velero
    object_storage_force_destroy_bucket: true
    vpc_cidr: <10.0.0.0/16>
+   ```
+
+2. **`bare-metal-vars.yaml`**:
+
+   ```yaml
    external_load_balancer_dns: <ext-haproxy-publicip>
    wireguard_port: 31821
    create_ext_dns_user: true
@@ -355,7 +359,7 @@ Update the following files in `custom-config/`:
    cert_manager_credentials_client_secret_name: "AWS_SECRET_ACCESS_KEY"
    ```
 
-2. **`common-vars.yaml`**:
+3. **`common-vars.yaml`**:
 
    ```yaml
    rook_ceph_helm_version: "1.15.5"
@@ -372,7 +376,7 @@ Update the following files in `custom-config/`:
    rook_ceph_aws_ebs_csi_driver_helm_version: "2.39.0"
    ```
 
-3. **`environment.yaml`**:
+4. **`environment.yaml`**:
 
    ```yaml
    environments:
@@ -380,7 +384,7 @@ Update the following files in `custom-config/`:
      - pm4ml
    ```
 
-4. **Set Environment Variables**:
+5. **Set Environment Variables**:
 
    ```bash
    source ~/.venv/bin/activate
