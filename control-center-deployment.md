@@ -11,54 +11,81 @@ This document provides an overview of the Mojaloop Control Center, focusing on i
 6. [Deployment](#deployment)
 7. [Best Practices](#best-practices)
 8. [Troubleshooting](#troubleshooting)
-9. [Important Notes](#important-notes)
-10. [Deploy Hub Environment](#deploy-hub-environment)
 
 ## Introduction
-This repository contains Terraform configurations for provisioning and managing cloud infrastructure. The code is designed to be modular, reusable, and easy to understand, allowing teams to deploy resources efficiently.
+The Mojaloop Control Center is a core component of the Mojaloop platform, enabling the management of interoperable digital financial services. This guide outlines the steps to deploy the Control Center on-premise, covering infrastructure setup, configuration, and deployment processes to support financial inclusion initiatives.
 
-## Key Technical Requirements 
-1. Infrastructure:
-    Understanding of cloud computing principles, especially regarding scalability, cost-effectiveness, and security.
-    Familiarity with both cloud-based and on-premise deployment models, including their respective advantages and limitations.
+---
 
-2. Terraform and Terragrunt:
-    Proficiency in using Terraform for provisioning and managing infrastructure.
-    Knowledge of writing modular and reusable Terraform configurations to facilitate efficient resource deployment.   
-    Understanding what Terragrunt is: a thin wrapper for Terraform that provides extra tools for keeping your configurations DRY (Don't Repeat Yourself).
-    Familiarity with how Terragrunt helps manage Terraform configurations across multiple environments and modules.
+## Key Technical Requirements
 
-4. Ansible:
-    Experience with Ansible for configuration management and automation of deployment tasks.
-    Ability to create playbooks and manage inventory files for orchestrating software installations and updates.
+1. **Infrastructure:**
 
-5. Containerization and Orchestration:
-    Understanding of Docker for containerization and Kubernetes (K8s) for orchestration.
-    Familiarity with deploying applications in a microservices architecture using K8s.
+   * Understanding of cloud computing principles, especially regarding scalability, cost-effectiveness, and security.
+   * Familiarity with both cloud-based and on-premise deployment models, including their respective advantages and limitations.
 
-6. Version Control Systems:
-    Proficient use of Git for version control, including branching, merging, and managing repositories.
+2. **Terraform and Terragrunt:**
 
-7. Scripting Languages:
-    Basic knowledge of shell scripting (e.g., Bash) to automate tasks within the deployment process.
+   * Proficiency in using Terraform for provisioning and managing infrastructure.
+   * Knowledge of writing modular and reusable Terraform configurations to facilitate efficient resource deployment.
+   * Understanding what Terragrunt is: a thin wrapper for Terraform that provides extra tools for keeping your configurations DRY (Don't Repeat Yourself).
+   * Familiarity with how Terragrunt helps manage Terraform configurations across multiple environments and modules.
 
-8. Installation and Configuration:
-    Ability to install necessary tools such as Terraform, Ansible, Git, jq, and yq.
-    Experience in configuring environments through YAML files and other configuration management tools.
+3. **Ansible:**
 
-9. Troubleshooting:
-    Skills in diagnosing issues during deployment processes and applying best practices for troubleshooting common problems.
+   * Experience with Ansible for configuration management and automation of deployment tasks.
+   * Ability to create playbooks and manage inventory files for orchestrating software installations and updates.
 
-10. Networking:
-    Understanding of networking concepts relevant to deployments, including security groups or firewalls, load balancers, nat gateways and domain management.
+4. **Containerization and Orchestration:**
 
-11. Compliance and Security:
-    Awareness of regulatory requirements regarding data storage and processing within specific jurisdictions.
-    Knowledge of security best practices for managing sensitive data.
+   * Understanding of Docker for containerization and Kubernetes (K8s) for orchestration.
+   * Familiarity with deploying applications in a microservices architecture using K8s.
 
-12. Monitoring and Observability:
-    Familiarity with tools for monitoring application performance (e.g., Grafana) and logging (e.g., Loki).
-    Ability to implement observability solutions that provide insights into system performance.
+5. **Version Control Systems:**
+
+   * Proficient use of Git for version control, including branching, merging, and managing repositories.
+
+6. **Scripting Languages:**
+
+   * Basic knowledge of shell scripting (e.g., Bash) to automate tasks within the deployment process.
+
+7. **Installation and Configuration:**
+
+   * Ability to install necessary tools such as Terraform, Ansible, Git, jq, and yq.
+   * Experience in configuring environments through YAML files and other configuration management tools.
+
+8. **Troubleshooting:**
+
+   * Skills in diagnosing issues during deployment processes and applying best practices for troubleshooting common problems.
+
+9. **Networking:**
+
+   * Understanding of networking concepts relevant to deployments, including security groups or firewalls, load balancers, NAT gateways, and domain management.
+
+10. **Compliance and Security:**
+
+    * Awareness of regulatory requirements regarding data storage and processing within specific jurisdictions.
+    * Knowledge of security best practices for managing sensitive data.
+
+11. **Monitoring and Observability:**
+
+    * Familiarity with tools for monitoring application performance (e.g., Grafana) and logging (e.g., Loki).
+    * Ability to implement observability solutions that provide insights into system performance.
+
+12. **Zitadel (Identity & Access Management):**
+
+    * Understanding of Zitadel, an open-source identity and access management (IAM) solution.
+    * Experience in integrating Zitadel for authentication, authorization, and Single Sign-On (SSO) solutions in a cloud-native environment.
+
+13. **NetBird (Zero Trust Networking):**
+
+    * Familiarity with NetBird, a Zero Trust Network Access (ZTNA) solution for secure, seamless networking across distributed environments.
+    * Knowledge of how to integrate NetBird for secure communication between resources and services in a multi-cloud or hybrid cloud setup.
+
+---
+
+This updated version now includes **Zitadel** for IAM (Identity and Access Management) and **NetBird** for secure networking as part of the key technical requirements.
+
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
@@ -493,3 +520,24 @@ ENV_TO_UPDATE : hub
 IAC_MODULES_VERSION_TO_UPDATE : v6.0.0-rc003
 ```	
 9. Finally, run the **deploy-env-templates** job. Afterward, you will see that your environment repository has been created in GitLab.
+
+
+## Best Practices
+- Always write clear and concise comments in your code whenever you commit to the GitLab repositories.
+- Avoid canceling jobs once they start running in GitLab CI. Let them fail naturally if necessary.
+- Regularly update your Terraform provider plugins, Terraform version, and application versions as needed for your requirements.
+
+## Troubleshooting
+- Check the output of terragrunt output and terragrunt apply for error messages related to GitLab.
+- Ensure that your provided credentials or vaules are correctly configured.
+- Review logs and state files for inconsistencies.
+- Check the ArgoCD sync status to ensure your applications are correctly deployed.
+```bash
+kubectl get app -n argocd
+```
+- If you need to unlock terraform state in Kubernetes, follow these steps:
+```bash
+kubectl get lease -A 
+kubectl delete lease <lock-tfstate-xxx-state>
+```
+
