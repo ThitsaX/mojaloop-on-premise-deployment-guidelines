@@ -71,6 +71,13 @@ Before you begin, ensure you have the following installed:
 - [yq](https://lindevs.com/install-yq-on-ubuntu/)
 - [jmespath](https://pypi.org/project/jmespath/)
 - [ability to run sudo without password](https://linuxhandbook.com/sudo-without-password/)
+- Install venv (if not already installed)
+  ```bash
+  sudo apt-get install python3-venv
+  python3 -m venv ~/.venv
+  source ~/.venv/bin/activate
+  pip install ansible-core==2.18.1
+  ```
 ## Base Infrastructure requirements
 
 | Component      | OS              | CPU    | RAM      | Storage                          | EIP   |
@@ -305,7 +312,7 @@ To get started with this Terraform codebase:
    master_hosts_0_private_ip: "<10.0.10.11>"
    agent_hosts: {}
    master_hosts:
-     <hostname_microk8s_1>:
+     <hostname_microk8s_1>:  # This should be the hostname of the first MicroK8s node.
        ip: <10.0.10.11>
        node_taints: []
        node_labels:
@@ -393,36 +400,41 @@ To get started with this Terraform codebase:
 
 5. Set environment variables:
    ```bash
-   source ./venv/bin/activate
+   source ~/.venv/bin/activate
    source ./externalrunner.sh
    source ./scripts/setlocalvars.sh
    ```   
 
 ## Deployment
-To apply the configurations:
-1. Plan the deployment to see what changes will be made:
+To apply the configurations and deploy the Mojaloop Control Center on your infrastructure, follow these steps:
+1. Initialize the Deployment
+Start by planning the deployment to understand the changes that will be made. This step initializes Terraform and prepares it for provisioning:
    ```bash
    terragrunt run-all init
    ```
 
-2. Apply the changes to your infrastructure:
+2. Apply the Changes
+Once the plan is initialized, apply the changes to your infrastructure. This step will start provisioning your microk8s cluster and deploy the necessary resources.
+If this process is taking too long and you would like to monitor the progress, you can move on to Step 3 via different termianl and start checking the deployment status while the terragrunt provisioning continues in the background.
    ```bash
    terragrunt run-all apply --terragrunt-non-interactive 
    ```
-3. This will start provisioning microk8s cluster and then you can see the argocd application deployment status via the bastion host
+4. Monitor the Deployment Progress
+The provisioning process may take some time. To monitor the status of your deployments, you can SSH into your Bastion Host and check the status of the applications deployed by ArgoCD.
  ```bash
    ssh -i <sshkey> ubuntu@<bastionpublicip>
    sudo su -
    ls ~/.kube/
    export KUBECONFIG=~/.kube/kubeconfig
    
-   ####You can install k9s to access control center cluster in bastion instance
+   ### Install and Use k9s for Cluster Management (Optional)
    wget https://github.com/derailed/k9s/releases/download/v0.50.4/k9s_linux_amd64.deb 
    dpkg -i k9s_linux_amd64.deb
    k9s
    
-   ### You can use the kubectl command to check the status. Keep in mind that it may take a significant amount of time to complete and reach a "Synced" state.
+   ### Alternatively, you can use kubectl to check the status of the applications. Keep in mind that it may take some time for all applications to sync and reach the "Synced" state.
    kubectl get app -n argocd
+   ### You should see output similar to the following, indicating that each application has been synced and is healthy:
    NAME                          SYNC STATUS   HEALTH STATUS
    argocd                        Synced        Healthy
    base-monitoring               Synced        Healthy
