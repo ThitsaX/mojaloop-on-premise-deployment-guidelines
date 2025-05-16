@@ -369,7 +369,7 @@ Update the following files in `custom-config/`:
    reporting-legacy-api:
      install-templates: false
      auth: false
-  ```
+   ```
 
 5. **`mcm-values-override.yaml`**
    ```yaml
@@ -384,15 +384,15 @@ Update the following files in `custom-config/`:
 
 6. **`mojaloop-vars.yaml`**
    ```yaml
-    mojaloop_chart_version: 17.0.0
-    finance_portal_chart_version: 5.0.1
-    central_ledger_handler_transfer_position_batch_processing_enabled: true
-    reporting_templates_chart_version: 1.1.15
-    ml_testing_toolkit_cli_chart_version: 15.9.0
-    currency: ${currency}
-    mcm_chart_version: 1.2.10
-    onboarding_net_debit_cap: 1000
-    onboarding_funds_in: 1000
+   mojaloop_chart_version: 17.0.0
+   finance_portal_chart_version: 5.0.1
+   central_ledger_handler_transfer_position_batch_processing_enabled: true
+   reporting_templates_chart_version: 1.1.15
+   ml_testing_toolkit_cli_chart_version: 15.9.0
+   currency: ${currency}
+   mcm_chart_version: 1.2.10
+   onboarding_net_debit_cap: 1000
+   onboarding_funds_in: 1000
    ``` 
 7. **`values-hub-provisioning-override.yaml`**
    ```yaml
