@@ -373,13 +373,13 @@ Update the following files in `custom-config/`:
 
 5. **`mcm-values-override.yaml`**
    ```yaml
-    api:
-       image:
-        name: ghcr.io/pm4ml/connection-manager-api
-        version:  v2.4.2
-    ui:
+   api:
       image:
-        version: 1.8.4
+       name: ghcr.io/pm4ml/connection-manager-api
+       version:  v2.4.2
+   ui:
+     image:
+       version: 1.8.4
    ```
 
 6. **`mojaloop-vars.yaml`**
