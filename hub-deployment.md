@@ -222,6 +222,7 @@ Update the following files in `custom-config/`:
    vpc_cidr: <10.10.0.0/16>
    managed_vpc_cidr: <10.130.0.0/16>
    domain: <example.com>
+   currency: <EUR>
    managed_svc_enabled: false
    k8s_cluster_type: microk8s
    cloud_platform: bare-metal
@@ -358,7 +359,49 @@ Update the following files in `custom-config/`:
    rook_ceph_aws_ebs_csi_driver_helm_version: "2.39.0"
    ```
 
-4. **`.gitlab-ci.yml`**: Update Line 314 to skip lint-apps job for the very firt time
+4. **`finance-portal-values-override.yaml`**
+   ```yaml
+   reporting-events-processor-svc:
+     replicaCount: 1
+   reporting-hub-bop-settlements-ui:
+     image:
+       tag: v0.0.22   
+   reporting-legacy-api:
+     install-templates: false
+     auth: false
+  ```
+
+5. **`mcm-values-override.yaml`**
+   ```yaml
+    api:
+       image:
+        name: ghcr.io/pm4ml/connection-manager-api
+        version:  v2.4.2
+    ui:
+      image:
+        version: 1.8.4
+   ```
+
+6. **`mojaloop-vars.yaml`**
+   ```yaml
+    mojaloop_chart_version: 17.0.0
+    finance_portal_chart_version: 5.0.1
+    central_ledger_handler_transfer_position_batch_processing_enabled: true
+    reporting_templates_chart_version: 1.1.15
+    ml_testing_toolkit_cli_chart_version: 15.9.0
+    currency: ${currency}
+    mcm_chart_version: 1.2.10
+    onboarding_net_debit_cap: 1000
+    onboarding_funds_in: 1000
+   ``` 
+7. **`values-hub-provisioning-override.yaml`**
+   ```yaml
+   testCaseEnvironmentFile:
+     inputValues:
+       DEFAULT_SETTLEMENT_MODEL_NAME: DEFERREDNET
+   ```    
+
+8. **`.gitlab-ci.yml`**: Update Line 314 to skip lint-apps job for the very firt time
    ```yaml
    if [ "$(./bin/yq eval .cloud_platform ../../$CONFIG_PATH/cluster-config.yaml)" = "bare-metal" ]; then echo "Skipping linting when not bare metal"; exit 0; fi
    ```
