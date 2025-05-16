@@ -4,7 +4,7 @@ Mojaloop deployments are predominantly cloud-based due to their scalability, cos
 This document provides an overview of the Mojaloop Control Center and Hub deployments, focusing on its deployment, particularly in on-premise environments. Understanding the deployment process is essential for organizations looking to leverage Mojaloop for enhancing financial inclusion through interoperable digital financial services.
 ## Table of Contents
 1. [Key Technical Requirements](#key-technical-requirements)
-2. [Deploy Control Center] (#deploy-control-center)
+2. [Deploy Control Center](#deploy-control-center)
 3. [Deploy Hub Environment](#deploy-mojaloop-hub)
 
 ## Key Technical Requirements 
