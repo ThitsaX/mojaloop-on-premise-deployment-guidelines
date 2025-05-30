@@ -6,6 +6,7 @@ This document provides an overview of the Mojaloop Control Center and Hub deploy
 1. [Key Technical Requirements](#key-technical-requirements)
 2. [Deploy Control Center](#deploy-control-center)
 3. [Deploy Hub Environment](#deploy-mojaloop-hub)
+4. [Deploy Payment Manager](#deploy-payment-manager)
 
 ## Key Technical Requirements 
 1. Infrastructure:
@@ -58,3 +59,6 @@ To continue with the deployment of the Control Center environment, please follow
 
 ## Deploy Mojaloop HUB
 To continue with the deployment of the Hub environment, please follow the detailed guidelines provided in the [Hub Deployment Documentation](https://github.com/ThitsaX/mojaloop-on-premise-deployment-guidelines/blob/main/hub-deployment.md).
+
+## Deploy Payment Manager
+To continue with the deployment of the Payment Manager (PM4ML) environment, please follow the detailed guidelines provided in the [PM4ML Deployment Documentation](https://github.com/ThitsaX/mojaloop-on-premise-deployment-guidelines/blob/main/pm4ml-deployment.md)
