@@ -1,4 +1,4 @@
-# Mojaloop Hub Deployment On-Premise
+# On-Premise Deployment of Mojaloop Hub
 
 [![GitHub Issues](https://img.shields.io/github/issues/mojaloop/iac-modules)](https://github.com/mojaloop/iac-modules/issues)
 [![GitHub Stars](https://img.shields.io/github/stars/mojaloop/iac-modules)](https://github.com/mojaloop/iac-modules)
@@ -295,6 +295,7 @@ Update the following files in `custom-config/`:
          workload-class.mojaloop.io/KAFKA-DATA-PLANE: "enabled"
          workload-class.mojaloop.io/RDBMS-CENTRAL-LEDGER-LIVE: "enabled"
          workload-class.mojaloop.io/RDBMS-ALS-LIVE: "enabled"
+         workload-class.mojaloop.io/MONITORING: "enabled"
      <dev-hub-microk8s-2>:
        ip: <10.110.10.5>
        node_taints: []
@@ -310,6 +311,7 @@ Update the following files in `custom-config/`:
          workload-class.mojaloop.io/KAFKA-DATA-PLANE: "enabled"
          workload-class.mojaloop.io/RDBMS-CENTRAL-LEDGER-LIVE: "enabled"
          workload-class.mojaloop.io/RDBMS-ALS-LIVE: "enabled"
+         workload-class.mojaloop.io/MONITORING: "enabled"
     < dev-hub-microk8s-3>:
        ip: <10.110.10.2>
        node_taints: []
@@ -325,6 +327,7 @@ Update the following files in `custom-config/`:
          workload-class.mojaloop.io/KAFKA-DATA-PLANE: "enabled"
          workload-class.mojaloop.io/RDBMS-CENTRAL-LEDGER-LIVE: "enabled"
          workload-class.mojaloop.io/RDBMS-ALS-LIVE: "enabled"
+         workload-class.mojaloop.io/MONITORING: "enabled"
    k6s_callback_fqdn: none
    enable_k6s_test_harness: false
    test_harness_private_ip: none
@@ -345,18 +348,7 @@ Update the following files in `custom-config/`:
 3. **`common-vars.yaml`**:
 
    ```yaml
-   rook_ceph_helm_version: "1.15.5"
-   rook_ceph_image_version: "v18.2.4"
-   rook_ceph_mon_volumes_size: "10Gi"
-   rook_ceph_osd_volumes_storage_class: "microk8s-hostpath"
-   rook_ceph_mon_volumes_storage_class: "microk8s-hostpath"
-   rook_ceph_cloud_pv_reclaim_policy: "Delete"
-   rook_ceph_csi_driver_replicas: "'2'"
-   rook_ceph_objects_replica_count: "'1'"
-   rook_ceph_osd_count: "'3'"
-   rook_ceph_volume_size_per_osd: "300Gi"
-   rook_ceph_volumes_provider: "host"
-   rook_ceph_aws_ebs_csi_driver_helm_version: "2.39.0"
+   longhorn_backup_job_enabled: false
    ```
 
 4. **`finance-portal-values-override.yaml`**
@@ -375,8 +367,8 @@ Update the following files in `custom-config/`:
    ```yaml
    api:
       image:
-       name: ghcr.io/pm4ml/connection-manager-api
-       version:  v2.4.2
+       name: ghcr.io/infitx/connection-manager-api
+       version:  v2.9.6
    ui:
      image:
        version: 1.8.4

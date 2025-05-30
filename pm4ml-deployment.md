@@ -1,11 +1,9 @@
-
-
-# On-Premise Deployment of Mojaloop Control Center
+# On-Premise Deployment of PM4ML
 
 [![GitHub Issues](https://img.shields.io/github/issues/mojaloop/iac-modules)](https://github.com/mojaloop/iac-modules/issues)
 [![GitHub Stars](https://img.shields.io/github/stars/mojaloop/iac-modules)](https://github.com/mojaloop/iac-modules)
 
-This repository provides a step-by-step guide for deploying the **Mojaloop Control Center** in an on-premise environment. While Mojaloop is typically cloud-based for scalability and security, on-premise deployments are ideal for compliance with data residency laws, reduced latency, or enhanced infrastructure control. This guide is tailored for DevOps engineers and system administrators experienced with Kubernetes, Terraform, and Ansible.
+This repository provides a step-by-step guide for deploying the **Payment Manager (PM4ML)** in an on-premise environment. This guide is tailored for DevOps engineers and system administrators experienced with Kubernetes, Terraform, and Ansible.
 
 ---
 
@@ -23,13 +21,13 @@ This repository provides a step-by-step guide for deploying the **Mojaloop Contr
 
 ## 📖 Introduction
 
-The **Mojaloop Control Center** is a critical component of the Mojaloop platform, enabling interoperable digital financial services to promote financial inclusion. This guide details the process of deploying the Control Center on-premise, covering infrastructure setup, configuration, and deployment using modern DevOps tools.
+This guide details the process of deploying the PM4ML on-premise, covering infrastructure setup, configuration, and deployment using modern DevOps tools.
 
 ---
 
 ## 🛠 Key Technical Requirements
 
-To deploy the Mojaloop Control Center, ensure proficiency in the following:
+To deploy the PM4ML, ensure proficiency in the following:
 
 - **Infrastructure**: Knowledge of cloud and on-premise deployment models.
 - **Terraform/Terragrunt**: Infrastructure provisioning with modular, DRY configurations.
@@ -48,28 +46,7 @@ To deploy the Mojaloop Control Center, ensure proficiency in the following:
 
 ## ✅ Prerequisites
 
-Install the following tools:
-
-| Tool          | Version       | Link |
-|---------------|---------------|------|
-| Terraform     | v1.3.2        | [Download](https://www.terraform.io/downloads.html) |
-| Terragrunt    | v0.57.0       | [Download](https://github.com/gruntwork-io/terragrunt/releases) |
-| Python 3      | v3.12         | [Download](https://www.python.org/downloads/) |
-| Ansible       | v2.18.1 / v10.0.1 | [Installation Guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) |
-| Git           | Latest        | [Download](https://git-scm.com/downloads) |
-| jq            | Latest        | [Download](https://jqlang.github.io/jq/download/) |
-| yq            | Latest        | [Installation Guide](https://lindevs.com/install-yq-on-ubuntu/) |
-| jmespath      | Latest        | `pip install jmespath` |
-| sudo (no password) | -         | [Guide](https://linuxhandbook.com/sudo-without-password/) |
-
-Set up a Python virtual environment:
-
-```bash
-sudo apt-get install python3-venv
-python3 -m venv ~/.venv
-source ~/.venv/bin/activate
-pip install ansible-core==2.18.1
-```
+##Control Center must be deployed first.
 
 ### Infrastructure Requirements
 
@@ -78,15 +55,15 @@ pip install ansible-core==2.18.1
 | Bastion        | Ubuntu 22.04 LTS | 2 vCPU  | 2 GB | 10 GB                       | 1 EIP |
 | External HAProxy | Ubuntu 22.04 LTS | 2 vCPU  | 2 GB | 10 GB                       | 1 EIP |
 | Internal HAProxy | Ubuntu 22.04 LTS | 2 vCPU  | 2 GB | 10 GB                       |       |
-| MicroK8s Node 1 | Ubuntu 22.04 LTS | 16 vCPU | 64 GB | 100 GB + 500 GB extra       |       |
-| MicroK8s Node 2 | Ubuntu 22.04 LTS | 16 vCPU | 64 GB | 100 GB + 500 GB extra       |       |
-| MicroK8s Node 3 | Ubuntu 22.04 LTS | 16 vCPU | 64 GB | 100 GB + 500 GB extra       |       |
+| MicroK8s Node 1 | Ubuntu 22.04 LTS | 16 vCPU | 32 GB | 100 GB + 500 GB extra       |       |
+| MicroK8s Node 2 | Ubuntu 22.04 LTS | 16 vCPU | 32 GB | 100 GB + 500 GB extra       |       |
+| MicroK8s Node 3 | Ubuntu 22.04 LTS | 16 vCPU | 32 GB | 100 GB + 500 GB extra       |       |
 
 ### DNS Configuration
 
 Create two AWS Route 53 hosted zones for your domain (e.g., `example.com`):
-- `int.cc.example.com` (internal/private resources)
-- `cc.example.com` (external/public resources)
+- `int.pm4ml.example.com` (internal/private resources)
+- `pm4ml.example.com` (external/public resources)
 
 ---
 
@@ -224,40 +201,32 @@ Create two AWS Route 53 hosted zones for your domain (e.g., `example.com`):
 
 ## 🚀 Getting Started
 
-Clone the repository and navigate to the Control Center directory:
-
-```bash
-git clone git@github.com:mojaloop/iac-modules.git
-cd iac-modules/terraform/ccnew
-```
+Open the hub repository and navigate to Gitlab Web IDE:
 
 ---
 ### Custom Configuration Files
 
 Update the following files in `custom-config/`:
 
+1. **`addons-vars.yaml`**: (Optional)
+   ```yaml
+   addons_github_org: mojaloop
+   addons_github_repo: iac-modules
+   addons_github_module_path: terraform/gitops/k8s-addons-config
+   addons_github_module_tag: v6.0.0-rc007
+   ```
+
 1. **`cluster-config.yaml`**:
    ```yaml
-   iac_terraform_modules_tag: v6.0.0-rc003
-   ansible_collection_tag: v5.5.0-rc5
-   cloud_platform: bare-metal
-   cluster_name: <dev>
-   coredns_bind_address: 169.254.20.10
-   dns_provider: aws
-   dns_zone_force_destroy: true
-   domain: example.com
-   enable_cloud_csi_provisioner: true
-   enable_object_storage_backend: true
-   iac_group_name: iac_admin
-   k8s_cluster_module: base-k8s
+   env: pm4ml
+   vpc_cidr: <10.120.0.0/16>
+   managed_vpc_cidr: 10.130.0.0/16
+   domain: <example.com>
+   managed_svc_enabled: false
    k8s_cluster_type: microk8s
-   kubernetes_oidc_enabled: true
-   letsencrypt_email: <test@example.com>
-   master_node_supports_traffic: true
-   microk8s_dev_skip: false
-   object_storage_base_bucket_name: velero
-   object_storage_force_destroy_bucket: true
-   vpc_cidr: <10.0.0.0/16>
+   cloud_platform: bare-metal
+   ansible_collection_tag: v5.5.0
+   iac_terraform_modules_tag: v6.0.0   
    ```
 
 2. **`bare-metal-vars.yaml`**:
@@ -273,10 +242,10 @@ Update the following files in `custom-config/`:
    backup_bucket_name: storage-bucket
    nat_public_ips: ["<natpublicip>"]
    internal_load_balancer_dns: <int-haproxy-privateip>
-   egress_gateway_cidr: 10.0.0.0/16
+   egress_gateway_cidr: <10.0.0.0/16>
    bastion_public_ips: ["<bastion-publicip>"]
-   private_subdomain: "int.cc.example.com"
-   public_subdomain: "cc.example.com"
+   private_subdomain: "<int.pm4ml.example.com>"
+   public_subdomain: "<pm4ml.example.com>"
    int_interop_switch_subdomain: intapi
    ext_interop_switch_subdomain: extapi
    target_group_internal_https_port: 31443
@@ -286,64 +255,30 @@ Update the following files in `custom-config/`:
    target_group_internal_health_port: 31081
    target_group_external_health_port: 32081
    private_network_cidrs:
-     - <10.0.10.0/24>
+     - <10.110.0.0/16>
    ssh_private_key: |
      -----BEGIN RSA PRIVATE KEY-----
-     <your-ssh-private-key>
      -----END RSA PRIVATE KEY-----
    os_user_name: ubuntu
-   base_domain: "example.com"
+   base_domain: "<pm4ml.example.com>"
    kubeapi_loadbalancer_fqdn: none
-   master_hosts_0_private_ip: "<10.0.10.11>"
+   master_hosts_0_private_ip: "<10.110.10.3>"
    agent_hosts: {}
    master_hosts:
-     <microk8s-1>:
-       ip: <10.0.10.11>
+     <dev-hub-microk8s-1>:
+       ip: <10.110.10.3>
        node_taints: []
        node_labels:
-         workload-class.mojaloop.io/CENTRAL-LEDGER-SVC: "enabled"
-         workload-class.mojaloop.io/CORE-API-ADAPTERS: "enabled"
-         workload-class.mojaloop.io/CENTRAL-SETTLEMENT: "enabled"
-         workload-class.mojaloop.io/QUOTING-SERVICE: "enabled"
-         workload-class.mojaloop.io/ACCOUNT-LOOKUP-SERVICE: "enabled"
-         workload-class.mojaloop.io/ALS-ORACLES: "enabled"
-         workload-class.mojaloop.io/CORE-HANDLERS: "enabled"
-         workload-class.mojaloop.io/KAFKA-CONTROL-PLANE: "enabled"
-         workload-class.mojaloop.io/KAFKA-DATA-PLANE: "enabled"
-         workload-class.mojaloop.io/RDBMS-CENTRAL-LEDGER-LIVE: "enabled"
-         workload-class.mojaloop.io/RDBMS-ALS-LIVE: "enabled"
          workload-class.mojaloop.io/MONITORING: "enabled"
-     <microk8s-2>:
-       ip: <10.0.10.12>
+     <dev-hub-microk8s-2>:
+       ip: <10.110.10.5>
        node_taints: []
        node_labels:
-         workload-class.mojaloop.io/CENTRAL-LEDGER-SVC: "enabled"
-         workload-class.mojaloop.io/CORE-API-ADAPTERS: "enabled"
-         workload-class.mojaloop.io/CENTRAL-SETTLEMENT: "enabled"
-         workload-class.mojaloop.io/QUOTING-SERVICE: "enabled"
-         workload-class.mojaloop.io/ACCOUNT-LOOKUP-SERVICE: "enabled"
-         workload-class.mojaloop.io/ALS-ORACLES: "enabled"
-         workload-class.mojaloop.io/CORE-HANDLERS: "enabled"
-         workload-class.mojaloop.io/KAFKA-CONTROL-PLANE: "enabled"
-         workload-class.mojaloop.io/KAFKA-DATA-PLANE: "enabled"
-         workload-class.mojaloop.io/RDBMS-CENTRAL-LEDGER-LIVE: "enabled"
-         workload-class.mojaloop.io/RDBMS-ALS-LIVE: "enabled"
          workload-class.mojaloop.io/MONITORING: "enabled"
-     <microk8s-3>:
-       ip: <10.0.10.13>
+    < dev-hub-microk8s-3>:
+       ip: <10.110.10.2>
        node_taints: []
        node_labels:
-         workload-class.mojaloop.io/CENTRAL-LEDGER-SVC: "enabled"
-         workload-class.mojaloop.io/CORE-API-ADAPTERS: "enabled"
-         workload-class.mojaloop.io/CENTRAL-SETTLEMENT: "enabled"
-         workload-class.mojaloop.io/QUOTING-SERVICE: "enabled"
-         workload-class.mojaloop.io/ACCOUNT-LOOKUP-SERVICE: "enabled"
-         workload-class.mojaloop.io/ALS-ORACLES: "enabled"
-         workload-class.mojaloop.io/CORE-HANDLERS: "enabled"
-         workload-class.mojaloop.io/KAFKA-CONTROL-PLANE: "enabled"
-         workload-class.mojaloop.io/KAFKA-DATA-PLANE: "enabled"
-         workload-class.mojaloop.io/RDBMS-CENTRAL-LEDGER-LIVE: "enabled"
-         workload-class.mojaloop.io/RDBMS-ALS-LIVE: "enabled"
          workload-class.mojaloop.io/MONITORING: "enabled"
    k6s_callback_fqdn: none
    enable_k6s_test_harness: false
@@ -365,53 +300,118 @@ Update the following files in `custom-config/`:
 3. **`common-vars.yaml`**:
 
    ```yaml
-   rook_ceph_helm_version: "1.15.5"
-   rook_ceph_image_version: "v18.2.4"
-   rook_ceph_mon_volumes_size: "10Gi"
-   rook_ceph_osd_volumes_storage_class: "microk8s-hostpath"
-   rook_ceph_mon_volumes_storage_class: "microk8s-hostpath"
-   rook_ceph_cloud_pv_reclaim_policy: "Delete"
-   rook_ceph_csi_driver_replicas: "'2'"
-   rook_ceph_objects_replica_count: "'1'"
-   rook_ceph_osd_count: "'3'"
-   rook_ceph_volume_size_per_osd: "300Gi"
-   rook_ceph_volumes_provider: "host"
-   rook_ceph_aws_ebs_csi_driver_helm_version: "2.39.0"
+   mcm_enabled: false
+   mojaloop_enabled: false
+   pm4ml_enabled: true
    ```
 
-4. **`environment.yaml`**:
-
+4. **`pm4ml-values-override.yaml`**
    ```yaml
-   environments:
-     - hub
-     - pm4ml
+   management-api:
+     image:
+       tag: 6.7.0
+     env:
+      ENABLE_UI_API_SERVER : true
+   
+   experience-api:
+     image:
+       tag: 3.1.2-snapshot.5
    ```
 
-5. **Set Environment Variables**:
+5. **`pm4ml-values`**
+   ```yaml
+   pm4mls:
+      dfsp1:
+        domain: ${replace(env,"/pm$/","")}.${domain}
+        pm4ml_enabled: true
+        pm4ml_chart_version: 10.2.0
+        pm4ml_external_mcm_public_fqdn: mcm.<hub.example.com>
+        pm4ml_ingress_internal_lb: false
+        pm4ml_external_switch_client_id: dfsp-jwt
+        pm4ml_external_switch_oidc_url: https://keycloak.<hub.example.com>
+        pm4ml_external_switch_oidc_token_route: realms/dfsps/protocol/openid-connect/token
+        pm4ml_external_switch_client_secret_vault_path: "mcmdev_client_secret"
+        pm4ml_external_switch_fqdn: extapi.<hub.example.com>
+        pm4ml_dfsp_id: dfsp1
+        pm4ml_ttk_enabled: false
+        auto_accept_party: false
+        enable_sdk_bulk_transaction_support: false
+        opentelemetry_enabled: false
+        opentelemetry_namespace_filtering_enable: false
+        ## core_connector_selected can be one of the following values: "ttk", "cc", "custom"
+        core_connector_selected: custom
+        ## custom_core_connector_endpoint is only required if core_connector_selected is set to "custom"
+        custom_core_connector_endpoint: dfsp1-mojaloop-core-connector:3003
+        pm4ml_reserve_notification: false
+        currency: <EUR>
+        core_connector_config:
+          image:
+            repository: <yourcore-connector-repositoryurl>
+            tag: <1.0.0>
+        payment_token_adapter_config: {
+          enabled: false
+        }
+        ui_custom_config:
+          TITLE: Payment Manager
 
-   ```bash
-   source ~/.venv/bin/activate
-   source ./externalrunner.sh
-   source ./scripts/setlocalvars.sh
    ```
+
+6. **`stateful-resources-operators.yaml`**
+   ```yaml
+   strimzi:
+     enabled: false
+     install_type: helm
+     helm_chart: strimzi-kafka-operator
+     namespace: strimzi
+     release_name: strimzi
+     helm_chart_version: 0.40.0
+     helm_chart_repo: https://strimzi.io/charts
+     helm_chart_values_file: values-strimzi.yaml
+   percona-mysql:
+     enabled: true
+     install_type: helm
+     helm_chart: pxc-operator
+     namespace: percona-mysql
+     release_name: percona-mysql
+     helm_chart_version: 1.14.0
+     helm_chart_repo: https://percona.github.io/percona-helm-charts/
+     helm_chart_values_file: values-percona-mysql.yaml
+   percona-mongodb:
+     enabled: false
+     install_type: helm
+     helm_chart: psmdb-operator
+     namespace: percona-mongodb
+     release_name: percona-mongodb
+     helm_chart_version: 1.16.2
+     helm_chart_repo: https://percona.github.io/percona-helm-charts/
+     helm_chart_values_file: values-percona-mongodb.yaml
+   redis:
+     enabled: false
+     install_type: operator
+     helm_chart: redis-operator
+     namespace: redis
+     release_name: redis
+     helm_chart_version: 0.20.0
+     helm_chart_repo: https://ot-container-kit.github.io/helm-charts/
+     helm_chart_values_file: values-redis.yaml
+   ``` 
+
+7. **`.gitlab-ci.yml`**: Update Line 314 to skip lint-apps job for the very firt time
+   ```yaml
+   if [ "$(./bin/yq eval .cloud_platform ../../$CONFIG_PATH/cluster-config.yaml)" = "bare-metal" ]; then echo "Skipping linting when not bare metal"; exit 0; fi
+   ```
+    
+
 
 ---
 
 ## 🚀 Deployment
+1. **Gitlab CI**:
+Navigate to the CI/CD pipeline section of your PM4ML repository in GitLab. Once there, locate the `deploy-infra` job, which is responsible for deploying your infrastructure. 
+Trigger this job to initiate the deployment process. This will automatically begin provisioning the necessary resources and configure the infrastructure according to the specifications defined in your repository's configuration files. Make sure that the pipeline is successfully executed, and monitor for any potential errors or issues that may arise during deployment.
 
-1. **Initialize Terraform**:
 
-   ```bash
-   terragrunt run-all init
-   ```
-
-2. **Apply Changes**:
-
-   ```bash
-   terragrunt run-all apply --terragrunt-non-interactive
-   ```
-
-3. **Monitor Deployment**:
+2. **Monitor Deployment**:
 
    SSH into the Bastion host to monitor ArgoCD applications:
 
@@ -429,27 +429,6 @@ Update the following files in `custom-config/`:
    dpkg -i k9s_linux_amd64.deb
    k9s
    ```
-
-4. **Move Terraform State**:
-
-   ```bash
-   ./movestatetok8s.sh
-   ```
-
-5. **Configure GitLab**:
-
-   - Log in to GitLab using credentials from the `gitlab` namespace secrets.
-   - Enable 2FA for the root user.
-   - In the `bootstrap` repository, run the `deploy` job in the CI/CD pipeline.
-   - Add CI/CD variables:
-
-     ```bash
-     ENV_TO_UPDATE: hub
-     IAC_MODULES_VERSION_TO_UPDATE: v6.0.0-rc003
-     ```
-
-   - Run the `deploy-env-templates` job to create the environment repository.
-
 ---
 
 ## 📝 Best Practices
