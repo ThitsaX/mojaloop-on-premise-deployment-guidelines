@@ -213,7 +213,7 @@ Update the following files in `custom-config/`:
    addons_github_org: mojaloop
    addons_github_repo: iac-modules
    addons_github_module_path: terraform/gitops/k8s-addons-config
-   addons_github_module_tag: v6.0.0-rc007
+   addons_github_module_tag: v6.0.0-rc003
    ```
 
 1. **`cluster-config.yaml`**:
@@ -225,8 +225,8 @@ Update the following files in `custom-config/`:
    managed_svc_enabled: false
    k8s_cluster_type: microk8s
    cloud_platform: bare-metal
-   ansible_collection_tag: v5.5.0
-   iac_terraform_modules_tag: v6.0.0   
+   ansible_collection_tag: v5.5.0-rc5
+   iac_terraform_modules_tag: v6.0.0-rc003   
    ```
 
 2. **`bare-metal-vars.yaml`**:

@@ -208,12 +208,12 @@ Open the hub repository and navigate to Gitlab Web IDE:
 
 Update the following files in `custom-config/`:
 
-1. **`addons-vars.yaml`**:
+1. **`addons-vars.yaml`**: (Optional)
    ```yaml
    addons_github_org: mojaloop
    addons_github_repo: iac-modules
    addons_github_module_path: terraform/gitops/k8s-addons-config
-   addons_github_module_tag: v6.0.0-rc007
+   addons_github_module_tag: v6.0.0-rc003
    ```
 
 1. **`cluster-config.yaml`**:
